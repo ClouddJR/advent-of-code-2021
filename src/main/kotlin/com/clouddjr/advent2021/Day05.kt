@@ -32,7 +32,7 @@ class Day05(input: List<String>) {
 
     fun solvePart2(): Int {
         lines.forEach { line ->
-            line.verticalRange().zip(line.horizontalRange()).forEach { (y, x) -> diagram[y][x]++ }
+            line.horizontalRange().zip(line.verticalRange()).forEach { (x, y) -> diagram[y][x]++ }
         }
 
         return diagram.sumOf { row -> row.count { overlaps -> overlaps >= 2 } }
