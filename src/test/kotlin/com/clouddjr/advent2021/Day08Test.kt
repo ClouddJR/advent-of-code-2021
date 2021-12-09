@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-@DisplayName("Day 9")
+@DisplayName("Day 8")
 class Day08Test {
 
     private val input = """
