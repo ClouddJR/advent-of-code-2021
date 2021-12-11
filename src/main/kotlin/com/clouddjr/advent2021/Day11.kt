@@ -8,20 +8,20 @@ class Day11(input: List<String>) {
         .let { Octopuses(it) }
 
     fun solvePart1(): Int {
-        return (1..100).sumOf {
-            octopuses.increaseEnergy()
-            octopuses.flash().also { octopuses.resetFlashed() }
-        }
+        return sequenceOfFlashes()
+            .take(100)
+            .sum()
     }
 
     fun solvePart2(): Int {
-        return generateSequence {
-            octopuses.increaseEnergy()
-            octopuses.flash()
-            octopuses.resetFlashed()
-        }
+        return sequenceOfFlashes()
             .takeWhile { octopuses.areNotSynchronized() }
             .count() + 1
+    }
+
+    private fun sequenceOfFlashes() = generateSequence {
+        octopuses.increaseEnergy()
+        octopuses.flash().also { octopuses.resetFlashed() }
     }
 }
 
