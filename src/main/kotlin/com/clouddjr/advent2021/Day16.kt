@@ -42,37 +42,37 @@ class Day16(input: String) {
             }
         }
     }
-}
 
-sealed class Packet(val bits: String) {
-    abstract fun sumOfVersions(): Int
-    abstract fun value(): Long
+    private sealed class Packet(val bits: String) {
+        abstract fun sumOfVersions(): Int
+        abstract fun value(): Long
 
-    val type = bits.drop(3).take(3).toInt(2)
-}
-
-class Literal(bits: String) : Packet(bits) {
-    override fun sumOfVersions() = bits.take(3).toInt(2)
-
-    override fun value() = bits.drop(6)
-        .chunked(5)
-        .joinToString("") { it.drop(1) }
-        .toLong(2)
-}
-
-class Operator(bits: String, private val subs: List<Packet>) : Packet(bits) {
-    override fun sumOfVersions() = bits.take(3).toInt(2) + subs.sumOf { it.sumOfVersions() }
-
-    override fun value(): Long = when (type) {
-        0 -> subs.sumOf { it.value() }
-        1 -> subs.fold(1) { acc, packet -> acc * packet.value() }
-        2 -> subs.minOf { it.value() }
-        3 -> subs.maxOf { it.value() }
-        5 -> (subs[0].value() > subs[1].value()).toLong()
-        6 -> (subs[0].value() < subs[1].value()).toLong()
-        7 -> (subs[0].value() == subs[1].value()).toLong()
-        else -> error("Unsupported type $type")
+        val type = bits.drop(3).take(3).toInt(2)
     }
 
-    private fun Boolean.toLong() = if (this) 1L else 0L
+    private class Literal(bits: String) : Packet(bits) {
+        override fun sumOfVersions() = bits.take(3).toInt(2)
+
+        override fun value() = bits.drop(6)
+            .chunked(5)
+            .joinToString("") { it.drop(1) }
+            .toLong(2)
+    }
+
+    private class Operator(bits: String, private val subs: List<Packet>) : Packet(bits) {
+        override fun sumOfVersions() = bits.take(3).toInt(2) + subs.sumOf { it.sumOfVersions() }
+
+        override fun value(): Long = when (type) {
+            0 -> subs.sumOf { it.value() }
+            1 -> subs.fold(1) { acc, packet -> acc * packet.value() }
+            2 -> subs.minOf { it.value() }
+            3 -> subs.maxOf { it.value() }
+            5 -> (subs[0].value() > subs[1].value()).toLong()
+            6 -> (subs[0].value() < subs[1].value()).toLong()
+            7 -> (subs[0].value() == subs[1].value()).toLong()
+            else -> error("Unsupported type $type")
+        }
+
+        private fun Boolean.toLong() = if (this) 1L else 0L
+    }
 }

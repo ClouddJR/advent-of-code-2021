@@ -14,11 +14,7 @@ class Day17(input: String) {
         val minX = (1..targetArea.x1).first { it.sequenceSum() >= targetArea.x1 }
         val maxX = targetArea.x2
 
-        return (minX..maxX).sumOf { x ->
-            (minY..maxY).count { y ->
-                Velocity(x, y).willBeWithin(targetArea)
-            }
-        }
+        return (minX..maxX).sumOf { x -> (minY..maxY).count { y -> Velocity(x, y).willBeWithin(targetArea) } }
     }
 
     data class TargetArea(val x1: Int, val x2: Int, val y1: Int, val y2: Int) {
@@ -26,16 +22,12 @@ class Day17(input: String) {
     }
 
     data class Velocity(val x: Int, val y: Int) {
-        fun willBeWithin(target: TargetArea): Boolean {
-            val seqX = seqX().takeWhile { (posX, _) -> posX <= target.x2 }.map { it.first }
-            val seqY = seqY().takeWhile { (posY, _) -> posY >= target.y1 }.map { it.first }
+        fun willBeWithin(target: TargetArea) =
+            (seqX() zip seqY()).takeWhile { (x, y) -> x <= target.x2 && y >= target.y1 }.any { it in target }
 
-            return (seqX zip seqY).any { it in target }
-        }
+        private fun seqX() = generateSequence(0 to x) { (x, velX) -> x + velX to maxOf(0, velX - 1) }.map { it.first }
 
-        private fun seqX() = generateSequence(0 to x) { (posX, velX) -> posX + velX to maxOf(0, velX - 1) }
-
-        private fun seqY() = generateSequence(0 to y) { (posY, velY) -> posY + velY to velY - 1 }
+        private fun seqY() = generateSequence(0 to y) { (y, velY) -> y + velY to velY - 1 }.map { it.first }
     }
 
     private fun Int.sequenceSum(): Int {

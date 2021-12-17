@@ -70,6 +70,6 @@ class Board(boardRepresentation: String) {
             row.filterNot { number -> number.marked }.sumOf { number -> number.value }
         }
     }
-}
 
-data class Number(val value: Int, var marked: Boolean = false)
+    private data class Number(val value: Int, var marked: Boolean = false)
+}
