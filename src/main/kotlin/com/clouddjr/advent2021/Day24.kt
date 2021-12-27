@@ -16,6 +16,7 @@ class Day24(input: List<String>) {
     private fun findModelNumber(largest: Boolean): Long {
         val stack = ArrayDeque<StackItem>()
         val digits = Array(14) { 0 }
+
         parameters.forEachIndexed { digitIndex, parameters ->
             if (parameters.xAddend >= 10) {
                 stack.add(StackItem(digitIndex, parameters.yAddend))
@@ -27,6 +28,7 @@ class Day24(input: List<String>) {
                 digits[digitIndex] = digit + addend
             }
         }
+
         return digits.fold(0L) { acc, d -> acc * 10 + d }
     }
 

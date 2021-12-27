@@ -1,5 +1,7 @@
 package com.clouddjr.advent2021
 
+import com.clouddjr.advent2021.utils.Point2D
+
 class Day11(input: List<String>) {
 
     private val octopuses = input
@@ -23,55 +25,52 @@ class Day11(input: List<String>) {
         octopuses.increaseEnergy()
         octopuses.flash().also { octopuses.resetFlashed() }
     }
-}
 
-class Octopuses(private val energies: Array<Array<Int>>) {
-
-    fun increaseEnergy() {
-        energies.forEachIndexed { y, row ->
-            row.forEachIndexed { x, _ ->
-                energies[y][x]++
-            }
-        }
-    }
-
-    fun flash(): Int {
-        val visited = mutableSetOf<Pair<Int, Int>>()
-        energies.forEachIndexed { y, row ->
-            row.forEachIndexed { x, energy ->
-                if (energy > 9 && (y to x) !in visited) {
-                    val toVisit = ArrayDeque(listOf(y to x))
-                    visited.add(y to x)
-                    while (toVisit.isNotEmpty()) {
-                        val (nextY, nextX) = toVisit.removeLast()
-                        neighbours(nextY, nextX)
-                            .filter { it !in visited }
-                            .filter { (y, x) -> ++energies[y][x] > 9 }
-                            .forEach { (y, x) ->
-                                toVisit.addLast(y to x)
-                                visited.add(y to x)
-                            }
-                    }
+    private class Octopuses(private val energies: Array<Array<Int>>) {
+        fun increaseEnergy() {
+            energies.forEachIndexed { y, row ->
+                row.forEachIndexed { x, _ ->
+                    energies[y][x]++
                 }
             }
         }
-        return visited.size
-    }
 
-    fun resetFlashed() {
-        energies.forEachIndexed { y, row ->
-            row.forEachIndexed { x, _ ->
-                energies[y][x] = if (energies[y][x] > 9) 0 else energies[y][x]
+        fun flash(): Int {
+            val visited = mutableSetOf<Point2D>()
+            energies.forEachIndexed { y, row ->
+                row.forEachIndexed { x, energy ->
+                    val current = Point2D(x, y)
+                    if (energy > 9 && current !in visited) {
+                        val toVisit = ArrayDeque<Point2D>().apply { addLast(current) }
+                        visited.add(current)
+                        while (toVisit.isNotEmpty()) {
+                            val next = toVisit.removeLast()
+                            next.validNeighbours()
+                                .filter { it !in visited }
+                                .filter { (x, y) -> ++energies[y][x] > 9 }
+                                .forEach {
+                                    toVisit.addLast(it)
+                                    visited.add(it)
+                                }
+                        }
+                    }
+                }
+            }
+            return visited.size
+        }
+
+        fun resetFlashed() {
+            energies.forEachIndexed { y, row ->
+                row.forEachIndexed { x, _ ->
+                    energies[y][x] = if (energies[y][x] > 9) 0 else energies[y][x]
+                }
             }
         }
-    }
 
-    fun areNotSynchronized() = energies.any { row -> row.any { energy -> energy > 0 } }
+        fun areNotSynchronized() = energies.any { row -> row.any { energy -> energy > 0 } }
 
-    private fun neighbours(y: Int, x: Int): List<Pair<Int, Int>> {
-        return (-1..1).flatMap { dy -> (-1..1).map { dx -> dy to dx } }
-            .filterNot { (dy, dx) -> dy == 0 && dx == 0 }
-            .map { (dy, dx) -> y + dy to x + dx }
-            .filter { (y, x) -> y in energies.indices && x in energies.first().indices }
+        private fun Point2D.validNeighbours(): List<Point2D> {
+            return neighboursWithDiagonals().filter { (y, x) -> y in energies.indices && x in energies.first().indices }
+        }
     }
 }

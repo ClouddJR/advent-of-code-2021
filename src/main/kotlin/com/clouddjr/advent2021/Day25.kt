@@ -9,6 +9,7 @@ class Day25(input: List<String>) {
         .associate { it.first to it.second }
 
     private val xMax = input.first().length
+
     private val yMax = input.size
 
     fun solvePart1() = generateSequence(initialRegion) { next(it) }

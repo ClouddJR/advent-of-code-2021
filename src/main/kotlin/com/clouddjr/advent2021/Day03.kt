@@ -15,13 +15,11 @@ class Day03(private val input: List<String>) {
     fun solvePart2(): Int {
         val oxygen = (0 until input.first().length).fold(input) { filtered, position ->
             val mostCommon = filtered.findCommonAtPosition(leastCommon = false, position)
-
             if (filtered.size == 1) filtered else filtered.filter { it[position] == mostCommon }
         }.single()
 
         val co2 = (0 until input.first().length).fold(input) { filtered, position ->
             val leastCommon = filtered.findCommonAtPosition(leastCommon = true, position)
-
             if (filtered.size == 1) filtered else filtered.filter { it[position] == leastCommon }
         }.single()
 

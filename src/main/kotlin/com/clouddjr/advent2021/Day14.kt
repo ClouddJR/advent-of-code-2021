@@ -9,13 +9,9 @@ class Day14(input: List<String>) {
         .groupBy({ it.substringBefore(" -> ") }, { it.substringAfter(" -> ") })
         .mapValues { it.value.single() }
 
-    fun solvePart1(): Long {
-        return insertionProcess(10)
-    }
+    fun solvePart1() = insertionProcess(10)
 
-    fun solvePart2(): Long {
-        return insertionProcess(40)
-    }
+    fun solvePart2() = insertionProcess(40)
 
     private fun insertionProcess(steps: Int): Long {
         val initial = template.windowed(2).groupingBy { it }.eachCount().mapValues { it.value.toLong() }

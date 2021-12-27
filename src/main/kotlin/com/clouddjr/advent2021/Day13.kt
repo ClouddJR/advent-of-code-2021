@@ -1,10 +1,12 @@
 package com.clouddjr.advent2021
 
+import com.clouddjr.advent2021.utils.Point2D
+
 class Day13(input: List<String>) {
 
     private val points = input
         .takeWhile { it.isNotEmpty() }
-        .map { it.substringBefore(",").toInt() to it.substringAfter(",").toInt() }
+        .map { Point2D(it.substringBefore(",").toInt(), it.substringAfter(",").toInt()) }
         .toSet()
 
     private val folds = input
@@ -12,26 +14,22 @@ class Day13(input: List<String>) {
         .map { it.substringAfterLast(" ") }
         .map { it.substringBefore("=") to it.substringAfter("=").toInt() }
 
-    fun solvePart1(): Int {
-        return foldPaper(folds.take(1)).count()
-    }
+    fun solvePart1() = foldPaper(folds.take(1)).count()
 
-    fun solvePart2(): Set<Pair<Int, Int>> {
-        return foldPaper(folds) // CPJBERUL
-    }
+    fun solvePart2() = foldPaper(folds) // CPJBERUL
 
-    private fun foldPaper(folds: List<Pair<String, Int>>): Set<Pair<Int, Int>> {
+    private fun foldPaper(folds: List<Pair<String, Int>>): Set<Point2D> {
         return folds.fold(points) { points, instruction ->
             val (axis, position) = instruction
             when (axis) {
                 "y" -> points
-                    .filter { it.second > position }
-                    .map { it.first to 2 * position - it.second }
-                    .toSet() + points.filter { it.second < position }
+                    .filter { it.y > position }
+                    .map { Point2D(it.x, 2 * position - it.y) }
+                    .toSet() + points.filter { it.y < position }
                 else -> points
-                    .filter { it.first > position }
-                    .map { 2 * position - it.first to it.second }
-                    .toSet() + points.filter { it.first < position }
+                    .filter { it.x > position }
+                    .map { Point2D(2 * position - it.x, it.y) }
+                    .toSet() + points.filter { it.x < position }
             }
         }
     }

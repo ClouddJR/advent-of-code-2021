@@ -1,5 +1,6 @@
 package com.clouddjr.advent2021
 
+import com.clouddjr.advent2021.utils.Point2D
 import java.util.PriorityQueue
 
 class Day15(input: List<String>) {
@@ -13,21 +14,19 @@ class Day15(input: List<String>) {
     fun solvePart2() = lowestRiskPath(expandedRiskLevels)
 
     private fun lowestRiskPath(riskLevels: List<List<Int>>): Int {
-        val dist = Array(riskLevels.size) { Array(riskLevels.first().size) { Int.MAX_VALUE } }.apply { get(0)[0] = 0 }
-
-        val toVisit = PriorityQueue<Pair<Int, Int>> { (pY, pX), (rY, rX) -> dist[pY][pX].compareTo(dist[rY][rX]) }
-        val visited = mutableSetOf(0 to 0)
-        toVisit.add(0 to 0)
+        val dist = Array(riskLevels.size) { Array(riskLevels.first().size) { Int.MAX_VALUE } }.apply { this[0][0] = 0 }
+        val toVisit = PriorityQueue<Point2D> { p1, p2 -> dist[p1.y][p1.x].compareTo(dist[p2.y][p2.x]) }
+        val visited = mutableSetOf<Point2D>()
+        toVisit.add(Point2D(0, 0))
 
         while (toVisit.isNotEmpty()) {
-            val (y, x) = toVisit.poll().also { visited.add(it) }
-
-            neighbours(y, x, riskLevels).forEach { (nY, nX) ->
-                if (!visited.contains(nY to nX)) {
-                    val newDistance = dist[y][x] + riskLevels[nY][nX]
-                    if (newDistance < dist[nY][nX]) {
-                        dist[nY][nX] = newDistance
-                        toVisit.add(nY to nX)
+            val current = toVisit.poll().also { visited.add(it) }
+            current.validNeighbours(riskLevels).forEach { neighbour ->
+                if (!visited.contains(neighbour)) {
+                    val newDistance = dist[current] + riskLevels[neighbour]
+                    if (newDistance < dist[neighbour]) {
+                        dist[neighbour] = newDistance
+                        toVisit.add(neighbour)
                     }
                 }
             }
@@ -35,6 +34,14 @@ class Day15(input: List<String>) {
 
         return dist[dist.lastIndex][dist.last().lastIndex]
     }
+
+    private operator fun Array<Array<Int>>.get(point: Point2D) = this[point.y][point.x]
+
+    private operator fun Array<Array<Int>>.set(point: Point2D, value: Int) {
+        this[point.y][point.x] = value
+    }
+
+    private operator fun List<List<Int>>.get(point: Point2D) = this[point.y][point.x]
 
     private fun List<List<Int>>.expand(): List<List<Int>> {
         val expandedRight = map { row -> (1 until 5).fold(row) { acc, step -> acc + row.increasedAndCapped(step) } }
@@ -45,9 +52,7 @@ class Day15(input: List<String>) {
 
     private fun List<Int>.increasedAndCapped(by: Int) = map { level -> (level + by).let { if (it > 9) it - 9 else it } }
 
-    private fun neighbours(y: Int, x: Int, riskLevels: List<List<Int>>): List<Pair<Int, Int>> {
-        return arrayOf((-1 to 0), (1 to 0), (0 to -1), (0 to 1))
-            .map { (dy, dx) -> y + dy to x + dx }
-            .filter { (y, x) -> y in riskLevels.indices && x in riskLevels.first().indices }
+    private fun Point2D.validNeighbours(riskLevels: List<List<Int>>): List<Point2D> {
+        return neighbours().filter { (x, y) -> y in riskLevels.indices && x in riskLevels.first().indices }
     }
 }

@@ -3,6 +3,7 @@ package com.clouddjr.advent2021
 class Day21(input: List<String>) {
 
     private val p1StartingPosition = input.first().last().digitToInt() - 1
+
     private val p2StartingPosition = input.last().last().digitToInt() - 1
 
     private val initialGameState = GameState(PlayerState(p1StartingPosition, 0), PlayerState(p2StartingPosition, 0))

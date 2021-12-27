@@ -6,6 +6,5 @@ class Day01(private val input: List<Int>) {
 
     fun solvePart2() = countIncreased(4)
 
-    private fun countIncreased(windowSize: Int) =
-        input.windowed(windowSize).count { window -> window.last() > window.first() }
+    private fun countIncreased(size: Int) = input.windowed(size).count { window -> window.last() > window.first() }
 }

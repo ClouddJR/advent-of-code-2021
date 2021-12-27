@@ -3,7 +3,9 @@ package com.clouddjr.advent2021
 class Day20(input: List<String>) {
 
     private val replaced = input.map { row -> row.map { if (it == '#') '1' else '0' }.joinToString("") }
+
     private val algorithm = replaced.first().toCharArray()
+
     private val startingImage = replaced.drop(2)
 
     fun solvePart1() = enhance(2)

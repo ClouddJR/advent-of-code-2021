@@ -1,7 +1,9 @@
 package com.clouddjr.advent2021
 
 class Day04(input: String) {
+
     private val numbers: List<Int>
+
     private val boards: List<Board>
 
     init {
@@ -18,7 +20,7 @@ class Day04(input: String) {
                     return number * winningBoard.sumOfUnmarked()
                 }
         }
-        throw Exception()
+        error("No winning board.")
     }
 
     fun solvePart2(): Int {
@@ -30,46 +32,45 @@ class Day04(input: String) {
             }
             boards.onEach { board -> board.mark(number) }.filterNot { it.hasWon() }
         }
-        throw Exception()
+        error("No winning board.")
     }
-}
 
-class Board(boardRepresentation: String) {
+    private class Board(boardRepresentation: String) {
+        private val numbers = Array(5) { Array(5) { Number(0) } }
 
-    private val numbers = Array(5) { Array(5) { Number(0) } }
-
-    init {
-        boardRepresentation.split("\n").forEachIndexed { rowIndex, row ->
-            row.split(" ").filterNot { it.isBlank() }.forEachIndexed { colIndex, number ->
-                numbers[rowIndex][colIndex] = Number(number.toInt())
+        init {
+            boardRepresentation.split("\n").forEachIndexed { rowIndex, row ->
+                row.split(" ").filterNot { it.isBlank() }.forEachIndexed { colIndex, number ->
+                    numbers[rowIndex][colIndex] = Number(number.toInt())
+                }
             }
         }
-    }
 
-    fun mark(value: Int) {
-        numbers.forEach { row ->
-            row.filter { number -> number.value == value }
-                .onEach { number -> number.marked = true }
-        }
-    }
-
-    fun hasWon(): Boolean {
-        val hasWinningRow = numbers.any { row ->
-            row.all { it.marked }
+        fun mark(value: Int) {
+            numbers.forEach { row ->
+                row.filter { number -> number.value == value }
+                    .onEach { number -> number.marked = true }
+            }
         }
 
-        val hasWinningCol = (0 until 5).any { col ->
-            numbers.map { row -> row[col] }.all { number -> number.marked }
+        fun hasWon(): Boolean {
+            val hasWinningRow = numbers.any { row ->
+                row.all { it.marked }
+            }
+
+            val hasWinningCol = (0 until 5).any { col ->
+                numbers.map { row -> row[col] }.all { number -> number.marked }
+            }
+
+            return hasWinningRow || hasWinningCol
         }
 
-        return hasWinningRow || hasWinningCol
-    }
-
-    fun sumOfUnmarked(): Int {
-        return numbers.sumOf { row ->
-            row.filterNot { number -> number.marked }.sumOf { number -> number.value }
+        fun sumOfUnmarked(): Int {
+            return numbers.sumOf { row ->
+                row.filterNot { number -> number.marked }.sumOf { number -> number.value }
+            }
         }
-    }
 
-    private data class Number(val value: Int, var marked: Boolean = false)
+        private data class Number(val value: Int, var marked: Boolean = false)
+    }
 }

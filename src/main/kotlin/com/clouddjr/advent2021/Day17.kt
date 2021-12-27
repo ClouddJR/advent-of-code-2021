@@ -17,11 +17,11 @@ class Day17(input: String) {
         return (minX..maxX).sumOf { x -> (minY..maxY).count { y -> Velocity(x, y).willBeWithin(targetArea) } }
     }
 
-    data class TargetArea(val x1: Int, val x2: Int, val y1: Int, val y2: Int) {
+    private data class TargetArea(val x1: Int, val x2: Int, val y1: Int, val y2: Int) {
         operator fun contains(point: Pair<Int, Int>) = point.first in x1..x2 && point.second in y1..y2
     }
 
-    data class Velocity(val x: Int, val y: Int) {
+    private data class Velocity(val x: Int, val y: Int) {
         fun willBeWithin(target: TargetArea) =
             (seqX() zip seqY()).takeWhile { (x, y) -> x <= target.x2 && y >= target.y1 }.any { it in target }
 

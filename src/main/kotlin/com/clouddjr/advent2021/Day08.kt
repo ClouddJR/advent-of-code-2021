@@ -8,9 +8,7 @@ class Day08(input: List<String>) {
             patterns.split(" ").map { it.toSet() } to output.split(" ").map { it.toSet() }
         }
 
-    fun solvePart1(): Int {
-        return entries.flatMap { it.second }.count { it.size in arrayOf(2, 3, 4, 7) }
-    }
+    fun solvePart1() = entries.flatMap { it.second }.count { it.size in arrayOf(2, 3, 4, 7) }
 
     fun solvePart2(): Int {
         return entries.sumOf { (patterns, output) ->

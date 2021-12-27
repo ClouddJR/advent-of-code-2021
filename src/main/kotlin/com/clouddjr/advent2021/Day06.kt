@@ -5,6 +5,7 @@ class Day06(input: String) {
     private val numbers = input.split(",").map { it.toInt() }
 
     fun solvePart1() = simulate(80)
+
     fun solvePart2() = simulate(256)
 
     private val cache = mutableMapOf<Int, Long>()

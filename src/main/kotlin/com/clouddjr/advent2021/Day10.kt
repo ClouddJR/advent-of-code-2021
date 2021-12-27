@@ -2,24 +2,11 @@ package com.clouddjr.advent2021
 
 class Day10(private val input: List<String>) {
 
-    private val matching = mapOf(
-        '(' to ')',
-        '[' to ']',
-        '{' to '}',
-        '<' to '>'
-    )
-    private val scoresIllegal = mapOf(
-        ')' to 3,
-        ']' to 57,
-        '}' to 1197,
-        '>' to 25137,
-    )
-    private val scoresCompletion = mapOf(
-        ')' to 1,
-        ']' to 2,
-        '}' to 3,
-        '>' to 4,
-    )
+    private val matching = mapOf('(' to ')', '[' to ']', '{' to '}', '<' to '>')
+
+    private val scoresIllegal = mapOf(')' to 3, ']' to 57, '}' to 1197, '>' to 25137)
+
+    private val scoresCompletion = mapOf(')' to 1, ']' to 2, '}' to 3, '>' to 4)
 
     fun solvePart1(): Int {
         return input

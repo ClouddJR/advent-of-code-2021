@@ -6,6 +6,7 @@ import kotlin.math.abs
 class Day23(input: List<String>) {
 
     private val initialState = State.from(input)
+
     private val initialStateExtended = State.from(input.take(3) + "  #D#C#B#A#  " + "  #D#B#A#C#  " + input.takeLast(2))
 
     fun solvePart1() = organizeAmphipods(initialState)

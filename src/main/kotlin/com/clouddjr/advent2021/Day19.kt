@@ -1,6 +1,6 @@
 package com.clouddjr.advent2021
 
-import kotlin.math.abs
+import com.clouddjr.advent2021.utils.Point3D
 
 class Day19(input: String) {
 
@@ -18,9 +18,11 @@ class Day19(input: String) {
 
     fun solvePart1() = assembleMap().beacons.size
 
-    fun solvePart2() = assembleMap().scannersPositions.let { positions ->
-        positions.flatMapIndexed { index, first -> positions.drop(index + 1).map { second -> first to second } }
-            .maxOf { (first, second) -> first distanceTo second }
+    fun solvePart2(): Int {
+        return assembleMap().scannersPositions.let { positions ->
+            positions.flatMapIndexed { index, first -> positions.drop(index + 1).map { second -> first to second } }
+                .maxOf { (first, second) -> first distanceTo second }
+        }
     }
 
     private fun assembleMap(): AssembledMap {
@@ -71,22 +73,4 @@ class Day19(input: String) {
     private data class TransformedScanner(val beacons: Set<Point3D>, val position: Point3D)
 
     private data class AssembledMap(val beacons: Set<Point3D>, val scannersPositions: Set<Point3D>)
-
-    private data class Point3D(val x: Int, val y: Int, val z: Int) {
-        operator fun plus(other: Point3D) = Point3D(x + other.x, y + other.y, z + other.z)
-
-        operator fun minus(other: Point3D) = Point3D(x - other.x, y - other.y, z - other.z)
-
-        infix fun distanceTo(other: Point3D) = abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
-
-        fun allRotations(): Set<Point3D> {
-            return setOf(
-                Point3D(x, y, z), Point3D(x, -z, y), Point3D(x, -y, -z), Point3D(x, z, -y), Point3D(-x, -y, z),
-                Point3D(-x, -z, -y), Point3D(-x, y, -z), Point3D(-x, z, y), Point3D(-z, x, -y), Point3D(y, x, -z),
-                Point3D(z, x, y), Point3D(-y, x, z), Point3D(z, -x, -y), Point3D(y, -x, z), Point3D(-z, -x, y),
-                Point3D(-y, -x, -z), Point3D(-y, -z, x), Point3D(z, -y, x), Point3D(y, z, x), Point3D(-z, y, x),
-                Point3D(z, y, -x), Point3D(-y, z, -x), Point3D(-z, -y, -x), Point3D(y, -z, -x),
-            )
-        }
-    }
 }

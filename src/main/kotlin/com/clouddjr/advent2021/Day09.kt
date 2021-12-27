@@ -1,42 +1,43 @@
 package com.clouddjr.advent2021
 
+import com.clouddjr.advent2021.utils.Point2D
+
 class Day09(input: List<String>) {
 
     private val heightmap = input.map { row -> row.map { it.digitToInt() } }
 
-    fun solvePart1(): Int {
-        return lowPoints().sumOf { (x, y) -> heightmap[x][y] + 1 }
-    }
+    fun solvePart1() = lowPoints().sumOf { heightmap[it] + 1 }
 
     fun solvePart2(): Int {
         return lowPoints()
-            .map { (rowIdx, colIdx) -> basin(rowIdx, colIdx).toSet().size }
+            .map { basin(it).toSet().size }
             .sortedDescending()
             .take(3)
             .reduce { acc, i -> acc * i }
     }
 
-    private fun basin(rowIdx: Int, colIdx: Int): List<Pair<Int, Int>> {
-        return neighbours(rowIdx, colIdx)
-            .filterNot { (x, y) -> heightmap[x][y] == 9 }
-            .fold(listOf((rowIdx to colIdx))) { points, (x, y) ->
-                points + if (heightmap[x][y] - heightmap[rowIdx][colIdx] >= 1) basin(x, y) else emptyList()
+    private fun basin(point: Point2D): List<Point2D> {
+        return point.validNeighbours()
+            .filterNot { heightmap[it] == 9 }
+            .fold(listOf((point))) { points, neighbour ->
+                points + if (heightmap[neighbour] > heightmap[point]) basin(neighbour) else emptyList()
             }
     }
 
-    private fun lowPoints(): List<Pair<Int, Int>> {
-        return heightmap.foldIndexed(emptyList()) { rowIdx, allPoints, row ->
-            row.foldIndexed(allPoints) { colIdx, points, height ->
-                neighbours(rowIdx, colIdx)
-                    .all { (x, y) -> heightmap[x][y] > height }
-                    .let { isLowest -> if (isLowest) points + (rowIdx to colIdx) else points }
+    private fun lowPoints(): List<Point2D> {
+        return heightmap.foldIndexed(emptyList()) { y, allPoints, row ->
+            row.foldIndexed(allPoints) { x, points, height ->
+                val current = Point2D(x, y)
+                current.validNeighbours()
+                    .all { heightmap[it] > height }
+                    .let { isLowest -> if (isLowest) points + current else points }
             }
         }
     }
 
-    private fun neighbours(rowIdx: Int, colIdx: Int): List<Pair<Int, Int>> {
-        return arrayOf((-1 to 0), (1 to 0), (0 to -1), (0 to 1))
-            .map { (dx, dy) -> rowIdx + dx to colIdx + dy }
-            .filter { (x, y) -> x in heightmap.indices && y in heightmap.first().indices }
+    private fun Point2D.validNeighbours(): List<Point2D> {
+        return neighbours().filter { (x, y) -> y in heightmap.indices && x in heightmap.first().indices }
     }
+
+    private operator fun List<List<Int>>.get(point: Point2D) = this[point.y][point.x]
 }
